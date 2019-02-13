@@ -79,6 +79,7 @@ object LDAAnalyzer {
     lazy val vocabLimit = params.getInt("ldaAnalyzer.vocabSizeLimit")
     var features_df = Utils.extractFeatures(bills,numTextFeatures,addNGramFeatures,nGramGranularity,true,useStemming,vocabLimit).cache()
     if (verbose) features_df.show
+    // features_df.show
     // features_df.write.parquet(params.getString("ldaAnalyzer.outputFile")+"_features")    
 
     // Trains LDA model
@@ -89,10 +90,10 @@ object LDAAnalyzer {
     // if (verbose) {
     val ll = model.logLikelihood(features_df)
     val lp = model.logPerplexity(features_df)
-    val fw: FileWriter = new FileWriter(params.getString("ldaAnalyzer.outputFile")+"_goodfit.dat")
-    fw.write(s"$ll"+"\n")
-    fw.write(s"$lp"+"\n")
-    fw.close()
+    // val fw: FileWriter = new FileWriter(params.getString("ldaAnalyzer.outputFile")+"_goodfit.dat")
+    // fw.write(s"$ll"+"\n")
+    // fw.write(s"$lp"+"\n")
+    // fw.close()
     // println(s"The lower bound on the log likelihood of the entire corpus: $ll")
     // println(s"The upper bound bound on perplexity: $lp")
     // }
@@ -104,6 +105,8 @@ object LDAAnalyzer {
       topics.show(false)
       //val matrix = model.topicsMatrix
     }
+    println("The topics described by their top-weighted terms:")
+    topics.show(false)
     topics.write.parquet(params.getString("ldaAnalyzer.outputFile")+"_topics")
 
     val clusters_df = model.transform(features_df)

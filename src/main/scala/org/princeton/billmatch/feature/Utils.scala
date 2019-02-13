@@ -200,7 +200,15 @@ object Utils {
     if (useStemming) {
         prefeaturized_df = new Stemmer().setInputCol("filtered").setOutputCol("stemmed")
           .setLanguage("English").transform(prefeaturized_df)
-        prefeaturized_df = prefeaturized_df.select(col("primary_key"),col("content"),col("docversion"),col("docid"),col("state"),col("year"),col("length"),col("stemmed").alias("filtered"))
+
+	val StopwordsAfterStem = Source.fromFile("stopwords/removeAfterStem.txt").getLines.toArray
+
+	var removerAfterStem = new StopWordsRemover().setInputCol("stemmed").setOutputCol("stemmedRemoved").setStopWords(StopwordsAfterStem)
+
+	prefeaturized_df = removerAfterStem.transform(prefeaturized_df).drop("stemmed")	    
+	  
+//         prefeaturized_df = prefeaturized_df.select(col("primary_key"),col("content"),col("docversion"),col("docid"),col("state"),col("year"),col("length"),col("stemmed").alias("filtered"))
+        prefeaturized_df = prefeaturized_df.select(col("primary_key"),col("content"),col("docversion"),col("docid"),col("state"),col("year"),col("length"),col("stemmedRemoved").alias("filtered"))
     }
 
     if (addNGramFeatures) {

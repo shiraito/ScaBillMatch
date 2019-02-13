@@ -105,7 +105,7 @@ object ExtractMinHashLSH {
     val featurized_df = hashingTF.transform(ngram_df).select("keys","primary_key","state")
     featurized_df.show()
 
-    val mh = new CustomizedMinHashLSH().setNumHashTables(100)
+    val mh = new CustomizedMinHashLSH().setNumHashTables(150)
       .setInputCol("keys")
       .setOutputCol("values")
       .setSeed(12345)

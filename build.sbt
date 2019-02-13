@@ -17,3 +17,4 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging-api" % "2.
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 libraryDependencies += "org.diana-hep" %% "histogrammar" % "1.0.4"
 libraryDependencies += "org.diana-hep" %% "histogrammar-sparksql" % "1.0.4"
+

@@ -301,7 +301,7 @@ class Preprocess(object):
 
 if __name__=='__main__':
 
-    for state in ['CO','IL','NJ']:
-        preprocessor = Preprocess("/scratch/network/alexeys/raw_bills","/scratch/network/shiraito/text/diffusion/replication/preprocessed/","test_COILNJ.json",True,True,True)
+    for state in ['AZ', 'TN']:
+        preprocessor = Preprocess("/nfs/turbo/lsa-shiraito/globus_share/bd/alexeys/raw_bills","/nfs/turbo/lsa-shiraito/text_preprocessed/","bills_combined_AZTN.json",True,True,True)
         preprocessor.fillStructures(state)
         preprocessor.saveStructures()
