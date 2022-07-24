@@ -76,7 +76,13 @@ object ExtractMinHashLSH {
 
     lazy val vv: String = params.getString("workflow2.docVersion")
     lazy val inputFile: String = params.getString("workflow2.inputFile")
-    val input = spark.read.json(inputFile).filter($"docversion" === vv).filter(Utils.compactSelector_udf(col("content"))).filter(Utils.lengthSelector_udf(col("content")))
+    
+    ////// standard implementation
+    // val input = spark.read.json(inputFile).filter($"docversion" === vv).filter(Utils.compactSelector_udf(col("content"))).filter(Utils.lengthSelector_udf(col("content")))
+    //////
+    ////// for dropped bills by compactSelector
+    val input = spark.read.json(inputFile).filter($"docversion" === vv).filter(Utils.lengthSelector_udf(col("content")))
+    //////
 
     ///val npartitions = (4*input.count()/1000).toInt
     val bills = input.repartition(400,col("primary_key")).cache()

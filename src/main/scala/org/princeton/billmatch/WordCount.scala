@@ -32,7 +32,7 @@ object WordCount {
     val t0 = System.nanoTime()
 
     val vv: String = "Introduced"
-    val inputFile: String = "file:///scratch/network/alexeys/bills/lexs/bills_combined_wu_50_p*"
+    val inputFile: String = "/user/shiraito/text_data/bills_combined_50_p*"
     val input = spark.read.json(inputFile).filter($"docversion" === vv).filter(Utils.lengthSelector_udf(col("content")))
     //val input = spark.read.json(inputFile).filter(Utils.lengthSelector_udf(col("content")))
 
@@ -57,8 +57,11 @@ object WordCount {
     val ngram = new NGram().setN(nGramGranularity).setInputCol("filtered").setOutputCol("ngram")
     val ngram_df = ngram.transform(prefeaturized_df)
 
-    val result = ngram_df.groupBy("ngram").agg(count("docid").alias("result")).select("result")
-    result.write.parquet("/user/alexeys/all_5grams")
+    ngram_df.show
+
+    val result = ngram_df.withColumn("n_ngram", size($"ngram")).select(col("primary_key"),col("n_ngram"))
+    // val result = ngram_df.groupBy("ngram").agg(count("docid").alias("result")).select("result")
+    result.write.parquet("/user/shiraito/out_WordCount_5gram/")
 
     val t1 = System.nanoTime()
     println("Elapsed time: " + (t1 - t0)/1000000000 + "s")

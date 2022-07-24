@@ -95,7 +95,8 @@ object ExtractCandidates {
     lazy val optimizationLevel = params.getInt("workflow1_makeCartesian.optimizationLevel")
     lazy val predicate_path = params.getString("workflow1_makeCartesian.cat")
 
-    val input = spark.read.json(params.getString("workflow1_makeCartesian.inputFile")).filter($"docversion" === vv).filter(Utils.compactSelector_udf(col("content"))).filter(Utils.lengthSelector_udf(col("content")))
+    // val input = spark.read.json(params.getString("workflow1_makeCartesian.inputFile")).filter($"docversion" === vv).filter(Utils.compactSelector_udf(col("content"))).filter(Utils.lengthSelector_udf(col("content")))
+    val input = spark.read.json(params.getString("workflow1_makeCartesian.inputFile")).filter($"docversion" === vv).filter(Utils.lengthSelector_udf(col("content")))
     input.printSchema()
     input.show()
 
@@ -153,12 +154,17 @@ object ExtractCandidates {
       val custom_predicate : String = Utils.makeCustomPredicate(predicate_path)        
       bills_meta_for_bcast = clusters_df.filter(custom_predicate).select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].collect()
 
+      clusters_df.filter(custom_predicate).show()
+
       if (params.getBoolean("workflow1_makeCartesian.bothIn")) {
-      	bills_meta = clusters_df.filter(custom_predicate).select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].cache()
-      } else {
-      	val custom_predicate_ex : String = Utils.makeCustomPredicateExclude(predicate_path)
-      	bills_meta = clusters_df.filter(custom_predicate_ex).select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].cache()
-      }
+      	 ////pairs contain specified bills only
+      	 bills_meta = clusters_df.filter(custom_predicate).select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].cache()
+      } // else {
+      	////pairs of one of specified bills and one of the rest
+      	// val custom_predicate_ex : String = Utils.makeCustomPredicateExclude(predicate_path)
+      	// bills_meta = clusters_df.filter(custom_predicate_ex).select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].cache()
+	// bills_meta = clusters_df.select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].cache()
+      // }
     } else {
       bills_meta_for_bcast = clusters_df.select("primary_key","docversion","docid","state","year","prediction","length").as[MetaLabeledDocument].collect()
     }
